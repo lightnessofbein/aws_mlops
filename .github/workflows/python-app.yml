@@ -44,3 +44,9 @@ jobs:
       env: 
            GITHUB_TOKEN: ${{ secrets.SONAR_GITHUB_TOKEN }}  # Needed to get PR information, if any
            SONAR_TOKEN: ${{ secrets.SONAR_AWS_MLOPS_TOKEN }}
+    
+    - name: Lambda zip and upload to s3
+      run: |
+      # zip every file in lambda_code directory individually. then pushes zip archives to s3
+      mkdir src/lambda_code/lambda_artifacts
+      find src/lambda_code -type f -execdir zip './lambda_artifacts/{}.zip' '{}' \;
