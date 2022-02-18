@@ -64,4 +64,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-west-1'   
           SOURCE_DIR: $LOCAL_LAMBDA_ARTIFACTS_FOLDER
-          DEST_DIR: ./lambda_scripts
+          DEST_DIR: lambda_scripts
