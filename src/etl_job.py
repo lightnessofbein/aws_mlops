@@ -1,3 +1,5 @@
+# type: ignore
+
 import sys
 from typing import Any
 # from awsglue.transforms import *
