@@ -40,7 +40,7 @@ jobs:
         flake8 $REPO_FOLDER --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Mypy check
-      run: mypy src
+      run: mypy $REPO_FOLDER
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
