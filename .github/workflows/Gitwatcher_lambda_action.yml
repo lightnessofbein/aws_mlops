@@ -40,15 +40,17 @@ jobs:
         flake8 $REPO_FOLDER --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
   push_config_to_aws:
-  # config for aws CodePipeline CI/CD 
-    - name: push zipped code to s3
-        uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read --follow-symlinks 
-        env:
-            AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_REGION: 'us-west-1'   
-            SOURCE_DIR: $REPO_FOLDER
-            DEST_DIR: lambda_scripts
+  # config for aws CodePipeline CI/CD
+        runs-on: ubuntu-latest
+        steps: 
+        - name: pushing lambda git watcher code to aws
+          uses: jakejarvis/s3-sync-action@master
+          with:
+            args: --acl public-read --follow-symlinks 
+          env:
+              AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              AWS_REGION: 'us-west-1'   
+              SOURCE_DIR: $REPO_FOLDER
+              DEST_DIR: lambda_scripts
