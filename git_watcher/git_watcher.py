@@ -1,6 +1,5 @@
-import boto3
 import json
-
+from boto3 import client
 
 def lambda_handler(event, context):
 
@@ -33,8 +32,7 @@ cpclient = None
 
 
 def codepipeline_client():
-
     global cpclient
     if not cpclient:
-        cpclient = boto3.client('codepipeline')
+        cpclient = client('codepipeline')
     return cpclient
