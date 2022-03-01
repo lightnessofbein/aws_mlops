@@ -4,6 +4,8 @@
 name: Lambda gitwatcher action
 
 on:
+  workflow_dispatch:
+  
   push:
     branches:
       - '*'
