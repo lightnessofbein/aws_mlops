@@ -17,7 +17,7 @@ on:
       - 'git_watcher/*'
 
 env:
-  REPO_FOLDER: ./git_watcher
+  REPO_FOLDER: git_watcher
 
 jobs:
   linting:
