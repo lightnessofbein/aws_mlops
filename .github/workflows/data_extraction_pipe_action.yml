@@ -10,6 +10,8 @@ on:
       - '!refs/tags/*'
     branches:
       - '*'
+    paths:
+      - data_extraction_pipe/**
   pull_request:
     branches: [ main ]
 

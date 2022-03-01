@@ -1,6 +1,7 @@
 import json
 from boto3 import client
 
+
 def lambda_handler(event, context):
 
     modifiedFiles = event["commits"][0]["modified"]
