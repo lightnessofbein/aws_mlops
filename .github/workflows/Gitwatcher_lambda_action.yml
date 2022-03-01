@@ -41,11 +41,6 @@ jobs:
         flake8 $REPO_FOLDER --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 $REPO_FOLDER --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
-
-  push_config_to_aws:
-  # config for aws CodePipeline CI/CD
-    runs-on: ubuntu-latest
-    steps: 
     - name: pushing lambda git watcher code to aws
       uses: jakejarvis/s3-sync-action@master
       with:
@@ -55,5 +50,5 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: 'us-west-1'   
-        SOURCE_DIR: .data_extraction_pipe
+        SOURCE_DIR: 'git_watcher'
         DEST_DIR: lambda_scripts
