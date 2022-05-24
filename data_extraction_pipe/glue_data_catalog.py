@@ -28,4 +28,4 @@ client = boto3.client('glue', region_name=config.REGION)
 dbClient = DataCatalogClient(client, 'sfeda-mlops-db')
 dbClient.create_database()
 
-dbClient.delete_glue_database()
+#dbClient.delete_glue_database()
