@@ -1,22 +1,24 @@
 import boto3
-import os
 import json
+from os import path
 
 sagemaker = boto3.client('sagemaker')
 s3 = boto3.resource('s3')
-EXECUTION_ROLE = 'arn:aws:iam::508741970469:role/vbakhur-lambda'
+EXECUTION_ROLE = 'arn:aws:iam::508741970469:role/service-role/sfeda-lambda-role-0za8fvd6'
 INSTANCE_TYPE = 'ml.m5.2xlarge'
-model_package_group_name = 'MyGroup'
+model_package_group_name = 'sfeda-model-package'
+endpoint = 'sfeda-deployed'
+
 
 DEPLOY = False
-APPROVAL_METRIC_VALUE = 0.85
-MODEL_PERFORMANCE_STORAGE = 'vbakhurrawdata'
+APPROVAL_METRIC_VALUE = 0.9
+MODEL_PERFORMANCE_STORAGE = 'sfeda-mlops-processed'
 
 
 def lambda_handler(event, context):
     container = event['container']
     best_training_job = event['best_training_job']
-    endpoint = 'vbakhur-deployed'
+
     model_data_url = event['model_data_url']
 
     print("Additional step - register model to model group")
@@ -28,8 +30,7 @@ def lambda_handler(event, context):
         TrainingJobName=best_training_job)
     objective_metric_value = [element for element in training_job_description['FinalMetricDataList']
                               if element['MetricName'] == 'ObjectiveMetric'][0]['Value']
-    s3object = s3.Object(MODEL_PERFORMANCE_STORAGE,
-                         'data/model_reports/' + best_training_job + '.json')
+    s3object = s3.Object(path.join(MODEL_PERFORMANCE_STORAGE, 'model_reports', best_training_job) + '.json')
     resp = s3object.put(
         Body=(bytes(json.dumps(training_job_description, default=str).encode('UTF-8'))))
 
