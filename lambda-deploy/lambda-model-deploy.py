@@ -19,7 +19,7 @@ def lambda_handler(event, context):
     # container = event['container']
     container = "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.3-1"
 
-    best_training_job = event['best_training_job']
+    best_training_job = event['BestTrainingJob']['TrainingJobName']
 
     # model_data_url = event['model_data_url']
     model_data_url = f'"s3://sfeda-mlops-processed/processed_data/xgboost/{best_training_job}/output/model.tar.gz"'
