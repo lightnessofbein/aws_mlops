@@ -16,10 +16,20 @@ MODEL_PERFORMANCE_STORAGE = 'sfeda-mlops-processed'
 
 
 def lambda_handler(event, context):
-    container = event['container']
+    # container = event['container']
+    container = "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.3-1"
+
     best_training_job = event['best_training_job']
 
-    model_data_url = event['model_data_url']
+    # model_data_url = event['model_data_url']
+    model_data_url = f'"s3://sfeda-mlops-processed/processed_data/xgboost/{best_training_job}/output/model.tar.gz"'
+
+    # model_package_group_input_dict = {
+    #     "ModelPackageGroupName": model_package_group_name,
+    #     "ModelPackageGroupDescription": "Sample model package group"
+    # }
+
+    # sagemaker.create_model_package_group(**model_package_group_input_dict)
 
     print("Additional step - register model to model group")
     register_model_response = register_model(
@@ -30,7 +40,7 @@ def lambda_handler(event, context):
         TrainingJobName=best_training_job)
     objective_metric_value = [element for element in training_job_description['FinalMetricDataList']
                               if element['MetricName'] == 'ObjectiveMetric'][0]['Value']
-    s3object = s3.Object(path.join(MODEL_PERFORMANCE_STORAGE, 'model_reports', best_training_job) + '.json')
+    s3object = s3.Object(MODEL_PERFORMANCE_STORAGE, path.join('model_reports', best_training_job) + '.json')
     resp = s3object.put(
         Body=(bytes(json.dumps(training_job_description, default=str).encode('UTF-8'))))
 
