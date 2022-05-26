@@ -118,7 +118,7 @@ def lambda_handler(event, context):
     event["container"] = container
     event["stage"] = "Training"
     event["status"] = "InProgress"
-    event['name'] = tuning_job_name
+    event['HyperParameterTuningJobName'] = tuning_job_name
 
     print(event)
     smclient.create_hyper_parameter_tuning_job(HyperParameterTuningJobName=tuning_job_name,
