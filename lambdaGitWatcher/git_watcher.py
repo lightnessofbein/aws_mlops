@@ -13,9 +13,8 @@ def lambda_handler(event, context):
 
     # start the pipeline
     if len(folderName) > 0:
-        # Codepipeline name is foldername-job.
-        # We can read the configuration from S3 as well.
-        start_code_pipeline(f'{folderName}-job')
+        # Codepipeline name is user-foldername-job.
+        start_code_pipeline(f'sfeda-{folderName}-job')
 
     return {
         'statusCode': 200,
