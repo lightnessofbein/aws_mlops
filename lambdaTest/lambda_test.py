@@ -22,5 +22,3 @@ def my_serverless_function(event: Any, context: Any) -> dict[str, Any]:
 
     # this returns some python list
     return response
-
-# hmm
