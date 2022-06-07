@@ -22,7 +22,7 @@ def lambda_handler(event, context):
     best_training_job = event['BestTrainingJob']['TrainingJobName']
 
     # model_data_url = event['model_data_url']
-    model_data_url = f'"s3://sfeda-mlops-processed/processed_data/xgboost/{best_training_job}/output/model.tar.gz"'
+    model_data_url = f"s3://sfeda-mlops-processed/processed_data/xgboost/{best_training_job}/output/model.tar.gz"
 
     # model_package_group_input_dict = {
     #     "ModelPackageGroupName": model_package_group_name,
