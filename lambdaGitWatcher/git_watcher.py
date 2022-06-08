@@ -3,6 +3,9 @@ from typing import Any, Dict
 from boto3 import client
 
 
+PIPECLIENT = None
+
+
 def lambda_handler(event: Dict[str, Any], context):
 
     body_str = event.get("body", "{}")
@@ -31,11 +34,8 @@ def start_code_pipeline(pipelineName):
     return True
 
 
-cpclient = None
-
-
 def codepipeline_client():
-    global cpclient
-    if not cpclient:
-        cpclient = client('codepipeline')
-    return cpclient
+    global PIPECLIENT
+    if not PIPECLIENT:
+        PIPECLIENT = client('codepipeline')
+    return PIPECLIENT
