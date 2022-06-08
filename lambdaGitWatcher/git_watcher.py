@@ -4,17 +4,19 @@ from boto3 import client
 
 def lambda_handler(event, context):
 
-    modifiedFiles = event["commits"][0]["modified"]
-    # full path
-    for filePath in modifiedFiles:
-        # Extract folder name
-        folderName = (filePath[:filePath.find("/")])
-        break
+    body_str = event.get("body", "{}")
+    body_obj = json.loads(body_str)
+    folderName = []
+
+    commits = body_obj['commits']
+    for commit in commits:
+        folderName += [filePath[:filePath.find("/")] for filePath in commit['modified'] if 'lambda' in filePath]
 
     # start the pipeline
     if len(folderName) > 0:
-        # Codepipeline name is user-foldername-job.
-        start_code_pipeline(f'sfeda-{folderName}-job')
+        for singleFolderName in folderName:
+            # Codepipeline name is user-foldername-job.
+            start_code_pipeline(f'sfeda-{singleFolderName}-job')
 
     return {
         'statusCode': 200,
