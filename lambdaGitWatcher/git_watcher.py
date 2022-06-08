@@ -1,8 +1,9 @@
 import json
+from typing import Any, Dict
 from boto3 import client
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: Dict[str, Any], context):
 
     body_str = event.get("body", "{}")
     body_obj = json.loads(body_str)
@@ -20,7 +21,7 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'body': json.dumps('Modified project in repo:' + folderName)
+        'body': json.dumps('Modified project in repo:' + '; '.join(folderName))
     }
 
 
