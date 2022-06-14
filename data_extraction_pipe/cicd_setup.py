@@ -11,7 +11,7 @@ lambda_name = f'{config.IAM_USERNAME}-{folder_name}'
 # arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:123456789012:function:HelloWorld/invocations
 # 1:123456789012:function:HelloWorld is partial arn of lambda
 # arn:aws:apigateway:{region}:{subdomain.service|service}:path|action/{service_api} - template for integration URI
-#gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
+# gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
 
 # creating webhook to the restapi just created
 hook = {u'name': u'web', u'active': True, u'config': {u'url': u'http://my/payload/destination'}}
@@ -130,6 +130,23 @@ client = boto3.client('codedeploy')
 response = client.create_application(
     applicationName=lambda_name,
     computePlatform='Lambda',  # 'Server'|'Lambda'|'ECS',
+    tags=[
+        {
+            'Key': 'owner',
+            'Value': config.OWNERSHIP_TAG['owner']
+        },
+    ]
+)
+
+response = client.create_deployment_group(
+    applicationName=lambda_name,
+    deploymentGroupName=lambda_name,
+    deploymentConfigName='CodeDeployDefault.LambdaAllAtOnce',
+    deploymentStyle={
+        'deploymentType': 'BLUE_GREEN',
+        'deploymentOption': 'WITH_TRAFFIC_CONTROL'
+    },
+    serviceRoleArn='arn:aws:iam::508741970469:role/CodeDeployRetraining',  # TODO: replace
     tags=[
         {
             'Key': 'owner',
