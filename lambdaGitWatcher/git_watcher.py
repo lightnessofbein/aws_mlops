@@ -3,7 +3,7 @@ from typing import Any, Dict
 from boto3 import client
 
 
-PIPECLIENT = None
+PIPECLIENT = client('codepipeline')
 
 
 def lambda_handler(event: Dict[str, Any], context):
@@ -20,22 +20,9 @@ def lambda_handler(event: Dict[str, Any], context):
     if len(folderName) > 0:
         for singleFolderName in folderName:
             # Codepipeline name is user-foldername-job.
-            start_code_pipeline(f'sfeda-{singleFolderName}')
+            PIPECLIENT.start_pipeline_execution(name=f'sfeda-{singleFolderName}')
 
     return {
         'statusCode': 200,
         'body': json.dumps('Modified project in repo:' + '; '.join(folderName))
     }
-
-
-def start_code_pipeline(pipelineName):
-    client = codepipeline_client()
-    client.start_pipeline_execution(name=pipelineName)
-    return True
-
-
-def codepipeline_client():
-    global PIPECLIENT
-    if not PIPECLIENT:
-        PIPECLIENT = client('codepipeline')
-    return PIPECLIENT
