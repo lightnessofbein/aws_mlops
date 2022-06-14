@@ -4,7 +4,8 @@ import config
 
 
 gateway_name = f'{config.IAM_USERNAME}-testing'
-lambda_name = f'{config.IAM_USERNAME}-lambdaGitWatcher'
+folder_name = 'lambdaGitWatcher'
+lambda_name = f'{config.IAM_USERNAME}-{folder_name}'
 # gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
 # what we need
 # arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:123456789012:function:HelloWorld/invocations
@@ -27,7 +28,7 @@ client.create_project(
     source={
         'type': 'CODEPIPELINE',
         # empty string forces codebuild to use buildspec.yaml from source root
-        'buildspec': f'{lambda_name}/buildspec.yaml',
+        'buildspec': f'{folder_name}/buildspec.yaml',
     },
     artifacts={'type': 'CODEPIPELINE'},
     # TODO: remove hardcode
@@ -121,6 +122,18 @@ response = client.create_pipeline(
         {
             'key': 'owner',
             'value': config.OWNERSHIP_TAG['owner']
+        },
+    ]
+)
+
+client = boto3.client('codedeploy')
+response = client.create_application(
+    applicationName=lambda_name,
+    computePlatform='Lambda',  # 'Server'|'Lambda'|'ECS',
+    tags=[
+        {
+            'Key': 'owner',
+            'Value': config.OWNERSHIP_TAG['owner']
         },
     ]
 )
