@@ -1,10 +1,10 @@
 import boto3
 import config
-import requests
+#import requests
 
 
 gateway_name = f'{config.IAM_USERNAME}-testing'
-lambda_name = 'sfeda-gitwatcher'
+lambda_name = f'{config.IAM_USERNAME}-lambdaGitWatcher'
 # gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
 # what we need
 # arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:123456789012:function:HelloWorld/invocations
@@ -12,62 +12,18 @@ lambda_name = 'sfeda-gitwatcher'
 # arn:aws:apigateway:{region}:{subdomain.service|service}:path|action/{service_api} - template for integration URI
 #gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
 
-gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-test'
-integration_lambda_uri = f'arn:aws:apigateway:{config.REGION}:lambda:path/' + \
-                         f'2015-03-31/functions/{gitwatcher_lambda_uri}/invocations'
-
-
-gitwatcher_dict = {}
-# using v1 and not v2 bec of REST available on v1, http and websocket are available on v2
-client = boto3.client('apigateway', region_name=config.REGION)
-response = client.create_rest_api(name=gateway_name,
-                                  endpointConfiguration={
-                                      'types': ['REGIONAL']},
-                                  disableExecuteApiEndpoint=False,
-                                  tags=config.OWNERSHIP_TAG)
-gitwatcher_dict['restApiId'] = response['id']
-gitwatcher_dict['resourceId'] = client.get_resources(
-    restApiId=response['id'])['items'][0]['id']
-
-client.put_method(restApiId=gitwatcher_dict['restApiId'],
-                  resourceId=gitwatcher_dict['resourceId'],
-                  httpMethod='POST',
-                  authorizationType='NONE')
-
-client.put_integration(restApiId=gitwatcher_dict['restApiId'],
-                       resourceId=gitwatcher_dict['resourceId'],
-                       httpMethod='POST',
-                       type='AWS_PROXY',
-                       integrationHttpMethod='POST',
-                       uri=integration_lambda_uri,
-                       )
-
-# add lambda permission to be invoked by api
-client = boto3.client('lambda')
-response = client.add_permission(
-    FunctionName=lambda_name,
-    StatementId=f'{gateway_name}-{gitwatcher_dict["restApiId"]}-invokepermission',
-    Action='lambda:InvokeFunction',
-    Principal='apigateway.amazonaws.com',
-    SourceArn=f'arn:aws:execute-api:{config.REGION}:508741970469:{gitwatcher_dict["restApiId"]}/*/POST/'
-)
-
-restapi_http = f"https://{gitwatcher_dict['restApiId']}.execute-api.{config.REGION}.amazonaws.com/{stage_name}/"
-
 # creating webhook to the restapi just created
 hook = {u'name': u'web', u'active': True, u'config': {u'url': u'http://my/payload/destination'}}
-p = requests.post(
-    'https://api.github.com/repos/lightnessofbein/aws_mlops/hooks', 
-    json=hook, headers={'Authorization': f'token {config.GITHUB_OAUTH_TOKEN}'})
+# p = requests.post(
+#    'https://api.github.com/repos/lightnessofbein/aws_mlops/hooks', 
+#    json=hook, headers={'Authorization': f'token {config.GITHUB_OAUTH_TOKEN}'})
 
 # [2] setting up CodePipeline
-
-
 # [2.1] setting up CodeBuild
 client = boto3.client('codebuild', region_name=config.REGION)
 client.create_project(
     name=lambda_name,
-    description='kill me',
+    description='',
     source={
         'type': 'CODEPIPELINE',
         # empty string forces codebuild to use buildspec.yaml from source root
