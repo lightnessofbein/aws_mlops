@@ -27,7 +27,7 @@ client.create_project(
     source={
         'type': 'CODEPIPELINE',
         # empty string forces codebuild to use buildspec.yaml from source root
-        'buildspec': '',
+        'buildspec': f'{lambda_name}/buildspec.yaml',
     },
     artifacts={'type': 'CODEPIPELINE'},
     # TODO: remove hardcode
