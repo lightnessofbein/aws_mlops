@@ -27,7 +27,7 @@ class CrawlerClient:
             Tags=config.OWNERSHIP_TAG
         )
 
-        return response['HTTPStatusCode']
+        return response['ResponseMetadata']['HTTPStatusCode']
 
     def delete_glue_crawler(self) -> None:
         self.client.delete_crawler(Name=self.name)
@@ -37,6 +37,7 @@ class CrawlerClient:
 
 
 client = boto3.client('glue', region_name=config.REGION)
-crawlerClient = CrawlerClient(client, 'sfeda-mlops-crawler')
+crawlerClient = CrawlerClient(client, 'sfeda-mlops-retrain-crawler')
 crawlerClient.create_glue_crawler()
 crawlerClient.run_glue_crawler()
+crawlerClient.delete_glue_crawler()
