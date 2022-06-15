@@ -108,7 +108,7 @@ response = client.create_pipeline(
                      'actions': [{'name': 'Deploy',
                                   'actionTypeId': {'category': 'Deploy',
                                                    'owner': 'AWS',
-                                                   'provider': 'CodeDeploy',
+                                                   'provider': 'CodeDeployToECS',
                                                    'version': '1'},
                                   'runOrder': 1,
                                   'configuration': {'ApplicationName': lambda_name,
