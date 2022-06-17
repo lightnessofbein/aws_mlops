@@ -32,3 +32,4 @@ jobs:
         with:
           args:             
             -Dsonar.verbose=true
+            -Dproject.settings=./sonar-project.properties
