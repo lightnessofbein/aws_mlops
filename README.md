@@ -4,10 +4,12 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=lightnessofbein_aws_mlops&metric=coverage)](https://sonarcloud.io/summary/new_code?id=lightnessofbein_aws_mlops)
 ## About
 This project sets up all infrastructure needed for [AWS MLOps retraining programm](https://confluence.softserveinc.com/pages/viewpage.action?spaceKey=TSG&title=AWS+MLOps+Retrain+Program)
+The whole pipeline which is setup looks like this
+INSERT CI/CD and everything
+<p align="center">
+  <img src="./documentation/images/stepfunctions_graph.png ">
+</p>
 AWS Infrastructure looks like this
-
-![alt text](https://github.com/lightnessofbein/aws_mlops/tree/main/documentation/images/stepfunctions_graph.png "Logo Title Text 1")
-<br>
-![alt text][logo]
-
-[logo]: https://github.com/lightnessofbein/aws_mlops/tree/main/documentation/images/stepfunctions_graph.png "Logo Title Text 1"
+<p align="center">
+  <img src="./documentation/images/stepfunctions_graph.png ">
+</p>
