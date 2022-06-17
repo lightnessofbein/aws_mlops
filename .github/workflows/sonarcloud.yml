@@ -33,3 +33,5 @@ jobs:
           args:             
             -Dsonar.verbose=true
             -Dproject.settings=./sonar-project.properties
+            -Dsonar.projectKey=lightnessofbein_aws_mlops
+            -Dsonar.organization=lightnessofbein
