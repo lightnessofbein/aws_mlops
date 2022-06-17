@@ -14,7 +14,7 @@ lambda_name = f'{config.IAM_USERNAME}-{folder_name}'
 # gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
 
 # creating webhook to the restapi just created
-hook = {u'name': u'web', u'active': True, u'config': {u'url': u'http://my/payload/destination'}}
+# hook = {u'name': u'web', u'active': True, u'config': {u'url': u'http://my/payload/destination'}}
 # p = requests.post(
 #    'https://api.github.com/repos/lightnessofbein/aws_mlops/hooks', 
 #    json=hook, headers={'Authorization': f'token {config.GITHUB_OAUTH_TOKEN}'})
@@ -108,11 +108,12 @@ response = client.create_pipeline(
                      'actions': [{'name': 'Deploy',
                                   'actionTypeId': {'category': 'Deploy',
                                                    'owner': 'AWS',
-                                                   'provider': 'CodeDeployToECS',
+                                                   'provider': 'CloudFormation',
                                                    'version': '1'},
                                   'runOrder': 1,
-                                  'configuration': {'ApplicationName': lambda_name,
-                                                    'DeploymentGroupName': lambda_name},
+                                  'configuration': {'ActionMode': 'CREATE_OR_REPLACE',
+                                                    'StackName': lambda_name
+                                                    },
                                   'outputArtifacts': [],
                                   'inputArtifacts': [{'name': 'BuildArtifact'}],
                                   'region': config.REGION,
