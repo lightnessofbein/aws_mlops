@@ -1,0 +1,34 @@
+name: SonarCloud analysis
+
+on:
+  push:
+    tags:
+     # add different proper testing for releases
+      - '!refs/tags/*'
+    branches:
+      - 'main'
+    paths:
+      - data_extraction_pipe/*.py
+      - lambdaDeploy/*.py
+      - lambdaGitWatcher/*.py
+      - lambdaTraining/*.py
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+
+jobs:
+  Analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Analyze with SonarCloud         
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.SONAR_GITHUB_TOKEN }}  # Needed to get PR information
+          SONAR_TOKEN: ${{ secrets.SONAR_AWS_MLOPS_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+        with:
+          args:             
+            -Dsonar.verbose=true
