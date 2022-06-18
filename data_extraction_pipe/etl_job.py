@@ -85,7 +85,7 @@ sqlContext.registerDataFrameAsTable(datasource0_df_melted, "datasource0_df_melte
 sqlContext.registerDataFrameAsTable(sell_prices, "sell_prices")
 
 datasource0_df_melted_merged = sqlContext.sql(
-    "SELECT * FROM datasource0_df_melted"
+    "SELECT TOP 5000 * FROM datasource0_df_melted"
     + "LEFT join sell_prices"
     + "ON ((datasource0_df_melted.store_id = sell_prices.store_id_1) and"
     + "(datasource0_df_melted.item_id = sell_prices.item_id_1) and"

@@ -15,7 +15,8 @@ class CrawlerClient:
             Role=config.IAM_ROLE,
             DatabaseName='sfeda-mlops-database',
             Targets={
-                'S3Targets': [{'Path': 's3://sfeda-mlops-raw'}]
+                'S3Targets': [{'Path': 's3://sfeda-mlops-raw',
+                               'Exclusions': ['logs/**', '*.ipynb']}]
             },
             SchemaChangePolicy={
                 'UpdateBehavior': 'UPDATE_IN_DATABASE',
@@ -39,5 +40,5 @@ class CrawlerClient:
 client = boto3.client('glue', region_name=config.REGION)
 crawlerClient = CrawlerClient(client, 'sfeda-mlops-retrain-crawler')
 crawlerClient.create_glue_crawler()
-crawlerClient.run_glue_crawler()
+#crawlerClient.run_glue_crawler()
 crawlerClient.delete_glue_crawler()
