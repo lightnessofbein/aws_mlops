@@ -1,13 +1,11 @@
 # type: ignore
 
 import sys
-from typing import Any
 
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.sql import DataFrame
 
 from pyspark.sql.functions import array, col, explode, lit, struct
 from awsglue.dynamicframe import DynamicFrame
@@ -18,8 +16,7 @@ from pyspark.sql.functions import lag
 
 
 def melt(
-    df: DataFrame, id_vars: list[Any], value_vars: list[Any], var_name: str = "variable", value_name: str = "value"
-) -> DataFrame:
+            df, id_vars, value_vars, var_name="variable", value_name="value"):
     """Convert :class:`DataFrame` from wide to long format."""
 
     # Create array<struct<variable: str, value: ...>>
@@ -30,6 +27,16 @@ def melt(
 
     cols = id_vars + [col("_vars_and_vals")[x].alias(x) for x in [var_name, value_name]]
     return _tmp.select(*cols)
+
+
+# Encoding values
+def encode_categorical_columns(columns, df):
+
+    for column in columns:
+        indexer = StringIndexer(inputCol=column, outputCol=column + "_encoded")
+        df = indexer.fit(df).transform(df)
+
+    return df
 
 
 # @params: [JOB_NAME]
@@ -85,26 +92,17 @@ sqlContext.registerDataFrameAsTable(datasource0_df_melted, "datasource0_df_melte
 sqlContext.registerDataFrameAsTable(sell_prices, "sell_prices")
 
 datasource0_df_melted_merged = sqlContext.sql(
-    "SELECT TOP 5000 * FROM datasource0_df_melted"
-    + "LEFT join sell_prices"
-    + "ON ((datasource0_df_melted.store_id = sell_prices.store_id_1) and"
-    + "(datasource0_df_melted.item_id = sell_prices.item_id_1) and"
-    + "(datasource0_df_melted.wm_yr_wk = sell_prices.wm_yr_wk_1))"
+    "SELECT * FROM datasource0_df_melted"
+    + " LEFT join sell_prices"
+    + " ON ((datasource0_df_melted.store_id = sell_prices.store_id_1) and"
+    + " (datasource0_df_melted.item_id = sell_prices.item_id_1) and"
+    + " (datasource0_df_melted.wm_yr_wk = sell_prices.wm_yr_wk_1))"
+    + " LIMIT 5000"
 )
 
 
 # Fill na values
 datasource0_df_melted_merged = datasource0_df_melted_merged.fillna({"sell_price": 0})
-
-
-# Encoding values
-def encode_categorical_columns(columns: Any, df: Any) -> Any:
-
-    for column in columns:
-        indexer = StringIndexer(inputCol=column, outputCol=column + "_encoded")
-        df = indexer.fit(df).transform(df)
-
-    return df
 
 
 categorical_features = [
