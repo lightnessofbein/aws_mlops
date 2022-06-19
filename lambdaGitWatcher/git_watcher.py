@@ -16,10 +16,8 @@ def lambda_handler(event: Dict[str, Any], context):
     for commit in commits:
         folderName += [filePath[:filePath.find("/")] for filePath in commit['modified'] if 'lambda' in filePath]
 
-    # start the pipeline
     if len(folderName) > 0:
         for singleFolderName in folderName:
-            # Codepipeline name is user-foldername-job.
             PIPECLIENT.start_pipeline_execution(name=f'sfeda-{singleFolderName}')
 
     return {
