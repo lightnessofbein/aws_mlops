@@ -1,23 +1,8 @@
 import boto3
 import config
-#import requests
 
-
-gateway_name = f'{config.IAM_USERNAME}-testing'
 folder_name = 'lambdaGitWatcher'
 lambda_name = f'{config.IAM_USERNAME}-{folder_name}'
-# gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
-# what we need
-# arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:123456789012:function:HelloWorld/invocations
-# 1:123456789012:function:HelloWorld is partial arn of lambda
-# arn:aws:apigateway:{region}:{subdomain.service|service}:path|action/{service_api} - template for integration URI
-# gitwatcher_lambda_uri = 'arn:aws:lambda:us-west-1:508741970469:function:sfeda-gitwatcher'
-
-# creating webhook to the restapi just created
-# hook = {u'name': u'web', u'active': True, u'config': {u'url': u'http://my/payload/destination'}}
-# p = requests.post(
-#    'https://api.github.com/repos/lightnessofbein/aws_mlops/hooks', 
-#    json=hook, headers={'Authorization': f'token {config.GITHUB_OAUTH_TOKEN}'})
 
 # [2] setting up CodePipeline
 # [2.1] setting up CodeBuild
