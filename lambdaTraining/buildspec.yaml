@@ -7,7 +7,7 @@ phases:
   pre_build:
     commands:
       - echo "Installing dependencies"
-      - cd lambdaDeploy
+      - cd lambdaTraining
       - pip install -r requirements.txt -t lib
   build: 
     commands:
@@ -15,9 +15,9 @@ phases:
       - cd lib
       - zip -r9 ../deployment_package.zip .
       - cd ..
-      - zip -g deployment_package.zip model-deploy.py
+      - zip -g deployment_package.zip model-training.py
   post_build:
     commands:
       - echo "Updating lambda Function..."
-      - aws lambda update-function-code --function-name sfeda-lambdaDeploy --zip-file fileb://deployment_package.zip
+      - aws lambda update-function-code --function-name sfeda-lambdaTraining --zip-file fileb://deployment_package.zip
       - echo "DONE!!"
