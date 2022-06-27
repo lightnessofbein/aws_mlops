@@ -11,5 +11,5 @@ INSERT CI/CD and everything
 </p>
 AWS Infrastructure looks like this
 <p align="center">
-  <img src="./documentation/images/stepfunctions_graph.png ">
+  <img src="./documentation/images/cicd.jpg ">
 </p>
