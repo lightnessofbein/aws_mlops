@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+  pre_build:
+    commands:
+      - echo "Installing dependencies"
+      - cd lambdaDeploy
+      - pip install -r requirements.txt -t lib
+  build: 
+    commands:
+      - echo "Zipping everything installed"
+      - cd lib
+      - zip -r9 ../deployment_package.zip .
+      - cd ..
+      - zip -g deployment_package.zip git_watcher.py
+  post_build:
+    commands:
+      - echo "Updating lambda Function..."
+      - aws lambda update-function-code --function-name sfeda-lambdaDeploy --zip-file fileb://deployment_package.zip
+      - echo "DONE!!"
