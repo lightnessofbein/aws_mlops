@@ -33,7 +33,7 @@ def melt(
 def encode_categorical_columns(columns, df):
 
     for column in columns:
-        indexer = StringIndexer(inputCol=column, outputCol=column + "_encoded")
+        indexer = StringIndexer(inputCol=column, outputCol=column + "_encoded").setHandleInvalid('keep')
         df = indexer.fit(df).transform(df)
 
     return df

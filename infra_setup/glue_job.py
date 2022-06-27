@@ -39,4 +39,4 @@ class EtlJobClient:
 client = boto3.client("glue", region_name=config.REGION)
 etl_job_client = EtlJobClient(client, "sfeda-mlops-etl-job", s3_script_path)
 etl_job_client.create_etl_job()
-etl_job_client.delete_etl_job()
+#etl_job_client.delete_etl_job()

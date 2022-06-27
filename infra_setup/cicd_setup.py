@@ -102,22 +102,7 @@ response = client.create_pipeline(
                                      'outputArtifacts': [{'name': 'BuildArtifact'}],
                                      'inputArtifacts': [{'name': 'SourceArtifact'}],
                                      'region': config.REGION,
-                                     'namespace': 'BuildVariables'}]},
-
-                    {'name': 'Deploy',
-                     'actions': [{'name': 'Deploy',
-                                  'actionTypeId': {'category': 'Deploy',
-                                                   'owner': 'AWS',
-                                                   'provider': 'CloudFormation',
-                                                   'version': '1'},
-                                  'runOrder': 1,
-                                  'configuration': {'ActionMode': 'CREATE_OR_REPLACE',
-                                                    'StackName': lambda_name
-                                                    },
-                                  'outputArtifacts': [],
-                                  'inputArtifacts': [{'name': 'BuildArtifact'}],
-                                  'region': config.REGION,
-                                  'namespace': 'DeployVariables'}]}],
+                                     'namespace': 'BuildVariables'}]},],
                 'version': 1},
     tags=[
         {
@@ -127,31 +112,3 @@ response = client.create_pipeline(
     ]
 )
 
-client = boto3.client('codedeploy')
-response = client.create_application(
-    applicationName=lambda_name,
-    computePlatform='Lambda',  # 'Server'|'Lambda'|'ECS',
-    tags=[
-        {
-            'Key': 'owner',
-            'Value': config.OWNERSHIP_TAG['owner']
-        },
-    ]
-)
-
-response = client.create_deployment_group(
-    applicationName=lambda_name,
-    deploymentGroupName=lambda_name,
-    deploymentConfigName='CodeDeployDefault.LambdaAllAtOnce',
-    deploymentStyle={
-        'deploymentType': 'BLUE_GREEN',
-        'deploymentOption': 'WITH_TRAFFIC_CONTROL'
-    },
-    serviceRoleArn='arn:aws:iam::508741970469:role/CodeDeployRetraining',  # TODO: replace
-    tags=[
-        {
-            'Key': 'owner',
-            'Value': config.OWNERSHIP_TAG['owner']
-        },
-    ]
-)
