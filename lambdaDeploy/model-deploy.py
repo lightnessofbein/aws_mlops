@@ -1,6 +1,4 @@
 import boto3
-import json
-from os import path
 
 sagemaker = boto3.client('sagemaker')
 s3 = boto3.resource('s3')
@@ -16,12 +14,10 @@ MODEL_PERFORMANCE_STORAGE = 'sfeda-mlops-processed'
 
 
 def lambda_handler(event, context):
-    # container = event['container']
+
     container = "746614075791.dkr.ecr.us-west-1.amazonaws.com/sagemaker-xgboost:1.3-1"
 
     best_training_job = event['BestTrainingJob']['TrainingJobName']
-
-    # model_data_url = event['model_data_url']
     model_data_url = f"s3://sfeda-mlops-processed/processed_data/xgboost/{best_training_job}/output/model.tar.gz"
 
     # model_package_group_input_dict = {
@@ -40,9 +36,6 @@ def lambda_handler(event, context):
         TrainingJobName=best_training_job)
     objective_metric_value = [element for element in training_job_description['FinalMetricDataList']
                               if element['MetricName'] == 'ObjectiveMetric'][0]['Value']
-    s3object = s3.Object(MODEL_PERFORMANCE_STORAGE, path.join('model_reports', best_training_job) + '.json')
-    resp = s3object.put(
-        Body=(bytes(json.dumps(training_job_description, default=str).encode('UTF-8'))))
 
     print("Check if new model is better than current one and update its status in model registry")
     if objective_metric_value < APPROVAL_METRIC_VALUE:
@@ -50,15 +43,13 @@ def lambda_handler(event, context):
         model_package_update_input_dict = {
             "ModelPackageArn": register_model_response['ModelPackageArn'],
             "ModelApprovalStatus": "Approved"}
-        model_package_update_response = sagemaker.update_model_package(
-            **model_package_update_input_dict)
+        sagemaker.update_model_package(**model_package_update_input_dict)
     else:
         DEPLOY = False
         model_package_update_input_dict = {
             "ModelPackageArn": register_model_response['ModelPackageArn'],
             "ModelApprovalStatus": "Rejected"}
-        model_package_update_response = sagemaker.update_model_package(
-            **model_package_update_input_dict)
+        sagemaker.update_model_package(**model_package_update_input_dict)
 
     print("Deploy model")
     if DEPLOY:
