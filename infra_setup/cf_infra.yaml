@@ -1,0 +1,41 @@
+Description: "AWS Glue Job for transformation of the crawled data"
+Resources:
+
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: "sfeda-data-catalog"
+        Description: "DB for sfeda-crawler"
+ 
+  GlueCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: "sfeda-crawler"
+      Role: "service-role/AWSGlueServiceRole-sfeda-mlops-retrain"
+      DatabaseName: !Ref GlueDatabase
+      Targets:
+        S3Targets:
+          - Path: "s3://sfeda-mlops-raw"
+          - Exclusions: ["logs/**", "*.ipynb"]
+      SchemaChangePolicy:
+        UpdateBehavior: "UPDATE_IN_DATABASE"
+        DeleteBehavior: "LOG"
+      Tags: {"owner": "sfeda"}
+
+  GlueEtlJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: sfeda-etl-job
+      Role: "service-role/AWSGlueServiceRole-sfeda-mlops-retrain"
+      Command:
+        Name: glueetl
+        ScriptLocation: "s3://sfeda-mlops-processed/etl_script_folder/etl_job.py"
+        PythonVersion: "3"
+      ExecutionProperty:
+        MaxConcurrentRuns: 2
+      MaxRetries: 0
+      Timeout: 1440
+      Tags: {"owner": "sfeda"}
+      GlueVersion: "3.0"

@@ -1,0 +1,66 @@
+Comment: A description of my state machine
+StartAt: StartCrawler
+States:
+  StartCrawler:
+    Type: Task
+    Next: Glue StartETLJob
+    Parameters:
+      Name: sfeda-mlops-retrain-crawler
+    Resource: arn:aws:states:::aws-sdk:glue:startCrawler
+  Glue StartETLJob:
+    Type: Task
+    Resource: arn:aws:states:::glue:startJobRun
+    Parameters:
+      JobName: sfeda-mlops-etl-job
+    Next: StartTraining
+  StartTraining:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    OutputPath: "$.Payload"
+    Parameters:
+      Payload.$: "$"
+      FunctionName: arn:aws:lambda:us-west-1:508741970469:function:sfeda-training-lambda:$LATEST
+    Retry:
+    - ErrorEquals:
+      - Lambda.ServiceException
+      - Lambda.AWSLambdaException
+      - Lambda.SdkClientException
+      IntervalSeconds: 2
+      MaxAttempts: 6
+      BackoffRate: 2
+    Next: DescribeHyperParameterTuningJob
+  DescribeHyperParameterTuningJob:
+    Type: Task
+    Next: Choice
+    Parameters:
+      HyperParameterTuningJobName.$: "$.HyperParameterTuningJobName"
+    Resource: arn:aws:states:::aws-sdk:sagemaker:describeHyperParameterTuningJob
+  Choice:
+    Type: Choice
+    Choices:
+    - Variable: "$.HyperParameterTuningJobStatus"
+      StringMatches: Completed
+      Next: StartDeploy
+    - Variable: "$.HyperParameterTuningJobStatus"
+      StringMatches: InProgress
+      Next: Wait
+  StartDeploy:
+    Type: Task
+    Resource: arn:aws:states:::lambda:invoke
+    OutputPath: "$.Payload"
+    Parameters:
+      Payload.$: "$"
+      FunctionName: arn:aws:lambda:us-west-1:508741970469:function:sfeda-deploy-lambda:$LATEST
+    Retry:
+    - ErrorEquals:
+      - Lambda.ServiceException
+      - Lambda.AWSLambdaException
+      - Lambda.SdkClientException
+      IntervalSeconds: 2
+      MaxAttempts: 6
+      BackoffRate: 2
+    End: true
+  Wait:
+    Type: Wait
+    Seconds: 300
+    Next: DescribeHyperParameterTuningJob
